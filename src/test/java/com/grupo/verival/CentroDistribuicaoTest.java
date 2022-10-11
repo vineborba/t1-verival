@@ -30,7 +30,7 @@ public class CentroDistribuicaoTest {
     })
     public void testaSituacao(int aditivo, int gasolina, int alcool, SITUACAO esperado) {
         CentroDistribuicao cd = new CentroDistribuicao(aditivo, gasolina, alcool / 2, alcool / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         assertEquals(esperado, cd.getSituacao());
     }
 
@@ -44,7 +44,7 @@ public class CentroDistribuicaoTest {
         CentroDistribuicao cd = new CentroDistribuicao(CentroDistribuicao.MAX_ADITIVO, inicial,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
         int abastecido = cd.recebeGasolina(adicional);
-        assertEquals(esperado, cd.gettGasolina());
+        assertEquals(esperado, cd.getGasolina());
         assertEquals(resto, abastecido);
     }
 
@@ -58,7 +58,7 @@ public class CentroDistribuicaoTest {
         CentroDistribuicao cd = new CentroDistribuicao(inicial, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
         int abastecido = cd.recebeAditivo(adicional);
-        assertEquals(esperado, cd.gettAditivo());
+        assertEquals(esperado, cd.getAditivo());
         assertEquals(resto, abastecido);
     }
 
@@ -72,8 +72,8 @@ public class CentroDistribuicaoTest {
         CentroDistribuicao cd = new CentroDistribuicao(CentroDistribuicao.MAX_ADITIVO, CentroDistribuicao.MAX_GASOLINA,
                 inicial / 2, inicial / 2);
         int abastecido = cd.recebeAlcool(adicional);
-        assertEquals(esperado, cd.gettAlcool1());
-        assertEquals(esperado, cd.gettAlcool2());
+        assertEquals(esperado, cd.getAlcool());
+        assertEquals(esperado, cd.getAlcool2());
         assertEquals(resto, abastecido);
     }
 
@@ -81,7 +81,7 @@ public class CentroDistribuicaoTest {
     public void testaEncomendaCombustivelNormalComum() {
         CentroDistribuicao cd = new CentroDistribuicao(CentroDistribuicao.MAX_ADITIVO, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         int quantidade = 1000;
         TIPOPOSTO tipo = TIPOPOSTO.COMUM;
         int[] esperado = { 0, 450, 9300, 1125, 1125 };
@@ -97,7 +97,7 @@ public class CentroDistribuicaoTest {
     public void testaEncomendaCombustivelNormalEstrategico() {
         CentroDistribuicao cd = new CentroDistribuicao(CentroDistribuicao.MAX_ADITIVO, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         int quantidade = 1000;
         TIPOPOSTO tipo = TIPOPOSTO.ESTRATEGICO;
         int[] esperado = { 0, 450, 9300, 1125, 1125 };
@@ -113,7 +113,7 @@ public class CentroDistribuicaoTest {
     public void testaEncomendaCombustivelSobravisoComum() {
         CentroDistribuicao cd = new CentroDistribuicao((CentroDistribuicao.MAX_ADITIVO / 2) - 1, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         int quantidade = 400;
         TIPOPOSTO tipo = TIPOPOSTO.COMUM;
         int[] esperado = { 0, 239, 9860, 1225, 1225 };
@@ -129,7 +129,7 @@ public class CentroDistribuicaoTest {
     public void testaEncomendaCombustivelSobravisoEstrategico() {
         CentroDistribuicao cd = new CentroDistribuicao((CentroDistribuicao.MAX_ADITIVO / 2) - 1, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         int quantidade = 400;
         TIPOPOSTO tipo = TIPOPOSTO.ESTRATEGICO;
         int[] esperado = { 0, 229, 9720, 1200, 1200 };
@@ -145,7 +145,7 @@ public class CentroDistribuicaoTest {
     public void testaEncomendaCombustivelEmergenciaComum() {
         CentroDistribuicao cd = new CentroDistribuicao((CentroDistribuicao.MAX_ADITIVO / 4) - 1, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         int quantidade = 400;
         TIPOPOSTO tipo = TIPOPOSTO.COMUM;
         int[] esperado = { -14, (CentroDistribuicao.MAX_ADITIVO / 4) - 1, CentroDistribuicao.MAX_GASOLINA, CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2 };
@@ -161,7 +161,7 @@ public class CentroDistribuicaoTest {
     public void testaEncomendaCombustivelEmergenciaEstrategico() {
         CentroDistribuicao cd = new CentroDistribuicao((CentroDistribuicao.MAX_ADITIVO / 4) - 1, CentroDistribuicao.MAX_GASOLINA,
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
-        cd.defineSituacao();
+        cd.defineSituação();
         int quantidade = 400;
         TIPOPOSTO tipo = TIPOPOSTO.ESTRATEGICO;
         int[] esperado = { 0, 104, 9720, 1200, 1200 };

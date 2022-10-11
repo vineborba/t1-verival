@@ -6,7 +6,7 @@ public class App {
                 CentroDistribuicao.MAX_ALCOOL / 2, CentroDistribuicao.MAX_ALCOOL / 2);
 
         System.out.println(
-                cd.gettAditivo());
+                cd.getAditivo());
 
     }
 }

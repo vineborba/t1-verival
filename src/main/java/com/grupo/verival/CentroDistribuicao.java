@@ -1,5 +1,7 @@
 package com.grupo.verival;
 
+// References: EXTREME GO HORSE
+
 public class CentroDistribuicao {
     public enum SITUACAO {
         NORMAL, SOBRAVISO, EMERGENCIA
@@ -13,233 +15,162 @@ public class CentroDistribuicao {
     public static final int MAX_ALCOOL = 2500;
     public static final int MAX_GASOLINA = 10000;
 
-    private SITUACAO situacao;
-    private int gasolina;
     private int aditivo;
-    private int alcool1;
+    private int gasolina;
+    private int alcool;
     private int alcool2;
+    private SITUACAO situacao;
 
     public CentroDistribuicao(int tAditivo, int tGasolina, int tAlcool1, int tAlcool2) {
-        this.situacao = SITUACAO.NORMAL;
+        if (validaEntradas(tAditivo, tGasolina, tAlcool1, tAlcool2)) {
+            throw new IllegalArgumentException("Valores de entrada invalidos");
+        }
         this.aditivo = tAditivo;
         this.gasolina = tGasolina;
-        this.alcool1 = tAlcool1;
+        this.alcool = tAlcool1;
         this.alcool2 = tAlcool2;
+
+        defineSituação();
     }
 
-    private SITUACAO verificaGasolina() {
-        double volume = this.gasolina / (MAX_GASOLINA * 1.0);
-        if (volume >= 0.5) {
-            return SITUACAO.NORMAL;
-        }
-        if (volume >= 0.25) {
-            return SITUACAO.SOBRAVISO;
-        }
-        return SITUACAO.EMERGENCIA;
-    }
-
-    private SITUACAO verificaAditivo() {
-        double volume = this.aditivo / (MAX_ADITIVO * 1.0);
-        if (volume >= 0.5) {
-            return SITUACAO.NORMAL;
-        }
-        if (volume >= 0.25) {
-            return SITUACAO.SOBRAVISO;
-        }
-        return SITUACAO.EMERGENCIA;
-    }
-
-    private SITUACAO verificaAlcool() {
-        double volume = (this.alcool1 + this.alcool2) / (MAX_ALCOOL* 1.0);
-        if (volume >= 0.5) {
-            return SITUACAO.NORMAL;
-        }
-        if (volume >= 0.25) {
-            return SITUACAO.SOBRAVISO;
-        }
-        return SITUACAO.EMERGENCIA;
-    }
-
-    public void defineSituacao() {
-        SITUACAO[] situacoes = {
-                this.verificaGasolina(),
-                this.verificaAditivo(),
-                this.verificaAlcool()
-        };
-        if (situacoes[0] == SITUACAO.EMERGENCIA || situacoes[1] == SITUACAO.EMERGENCIA
-                || situacoes[2] == SITUACAO.EMERGENCIA) {
-            this.situacao = SITUACAO.EMERGENCIA;
-        } else if (situacoes[0] == SITUACAO.SOBRAVISO || situacoes[1] == SITUACAO.SOBRAVISO
-                || situacoes[2] == SITUACAO.SOBRAVISO) {
-            this.situacao = SITUACAO.SOBRAVISO;
-        } else {
+    public void defineSituação() {
+        if ((this.aditivo >= (MAX_ADITIVO * 0.5)) &&
+                (this.gasolina >= (MAX_GASOLINA * 0.5)) &&
+                (this.alcool >= (MAX_ALCOOL * 0.5)) &&
+                (this.alcool2 >= (MAX_ALCOOL * 0.5))) {
             this.situacao = SITUACAO.NORMAL;
+        } else if ((this.aditivo < (MAX_ADITIVO * 0.5) && this.aditivo >= (MAX_ADITIVO * 0.25)) ||
+                (this.gasolina < (MAX_GASOLINA * 0.5) && this.gasolina >= (MAX_GASOLINA * 0.25)) ||
+                (this.alcool < (MAX_ALCOOL * 0.5) && this.alcool >= (MAX_ALCOOL * 0.25)) ||
+                (this.alcool2 < (MAX_ALCOOL * 0.5) && this.alcool2 >= (MAX_ALCOOL * 0.25))) {
+            this.situacao = SITUACAO.SOBRAVISO;
+        } else if ((this.aditivo < (MAX_ADITIVO * 0.25)) ||
+                (this.gasolina < (MAX_GASOLINA * 0.25)) ||
+                (this.alcool < (MAX_ALCOOL * 0.25)) ||
+                (this.alcool2 < (MAX_ALCOOL * 0.25))) {
+            this.situacao = SITUACAO.EMERGENCIA;
         }
     }
 
-    public SITUACAO getSituacao() {
-        return this.situacao;
+    private int[] getQuantidadeTanques() {
+        int[] tanques = { aditivo, gasolina, alcool, alcool2 };
+        return tanques;
     }
 
-    public int gettGasolina() {
-        return this.gasolina;
-    }
+    private boolean encomenda(int qtdAditivo, int qtdGasolina, int qtdAlcool, int qtdAlcool2, int multiplicador) {
+        int aditivo = this.aditivo - qtdAditivo * multiplicador / 100;
+        int gasolina = this.gasolina - qtdGasolina * multiplicador / 100;
+        int alcool = this.alcool - qtdAlcool / 2 * multiplicador / 100;
+        int alcool2 = this.alcool2 - qtdAlcool / 2 * multiplicador / 100;
 
-    public int gettAditivo() {
-        return this.aditivo;
-    }
+        if (aditivo < 0 || gasolina < 0 || alcool < 0 || alcool2 < 0)
+            return false;
 
-    public int gettAlcool1() {
-        return this.alcool1;
-    }
-
-    public int gettAlcool2() {
-        return this.alcool2;
-    }
-
-    public int recebeAditivo(int qtdade) {
-        if (qtdade < 0) {
-            throw new IllegalArgumentException("Quantidade invalida");
-        }
-        if (qtdade == 0) {
-            return -1;
-        }
-
-        int restante = CentroDistribuicao.MAX_ADITIVO - this.aditivo;
-        if (restante >= qtdade) {
-            this.aditivo += qtdade;
-            defineSituacao();
-            return qtdade;
-        }
-        int resto = qtdade - restante;
-        int carga = qtdade - resto;
-        this.aditivo += carga;
-        defineSituacao();
-        return carga;
-    }
-
-    public int recebeGasolina(int qtdade) {
-        if (qtdade < 0) {
-            throw new IllegalArgumentException("Quantidade invalida");
-        }
-        if (qtdade == 0) {
-            return -1;
-        }
-
-        int restante = CentroDistribuicao.MAX_GASOLINA - this.gasolina;
-        if (restante >= qtdade) {
-            this.gasolina += qtdade;
-            defineSituacao();
-            return qtdade;
-        }
-        int resto = qtdade - restante;
-        int carga = qtdade - resto;
-        this.gasolina += carga;
-        defineSituacao();
-        return carga;
-    }
-
-    public int recebeAlcool(int qtdade) {
-        if (qtdade < 0) {
-            throw new IllegalArgumentException("Quantidade invalida");
-        }
-        if (qtdade == 0) {
-            return -1;
-        }
-        int qtdade100 = qtdade * 100;
-        int restante = CentroDistribuicao.MAX_ALCOOL - (this.alcool1 + this.alcool2);
-        int restante100 = restante * 100;
-        if (restante100 > qtdade100) {
-            int metade100 = qtdade100 / 2;
-            int metade = (int) Math.floor(metade100 / 100.0);
-            this.alcool1 += metade;
-            this.alcool2 += metade;
-            defineSituacao();
-            return metade * 2;
-        }
-        int resto100 = qtdade100 - restante100;
-        int carga100 = qtdade100 - resto100;
-        int metade100 = carga100 / 2;
-        int metade = (int) Math.floor(metade100 / 100.0);
-        this.alcool1 += metade;
-        this.alcool2 += metade;
-        defineSituacao();
-        return metade * 2;
-    }
-
-    private void retiraGasolina(int quantidade) throws Exception {
-        double quantidadeRetirada = 0.7 * quantidade;
-        if (quantidadeRetirada > this.gasolina) {
-            throw new Exception();
-        }
-        this.gasolina = (int) Math.ceil(this.gasolina - quantidadeRetirada);
-    }
-
-    private void retiraAditivo(int quantidade) throws Exception {
-        double quantidadeRetirada = 0.05 * quantidade;
-        if (quantidadeRetirada > this.aditivo) {
-            throw new Exception();
-        }
-        this.aditivo = (int) Math.ceil(this.aditivo - quantidadeRetirada);
-    }
-
-    private void retiraAlcool(int quantidade) throws Exception {
-        double quantidadeRetirada = (0.25 / 2) * quantidade;
-        if (quantidadeRetirada > (this.alcool1 + this.alcool2)) {
-            throw new Exception();
-        }
-        this.alcool1 = (int) Math.ceil(this.alcool1 - quantidadeRetirada);
-        this.alcool2 = (int) Math.ceil(this.alcool2 - quantidadeRetirada);
+        this.aditivo = aditivo;
+        this.gasolina = gasolina;
+        this.alcool = alcool;
+        this.alcool2 = alcool2;
+        return true;
     }
 
     public int[] encomendaCombustivel(int qtdade, TIPOPOSTO tipoPosto) {
-        int[] quantidades = new int[5];
-        double multiplicadorNormal = 1.0;
-        double multiplicadorEstrategico = 1.0;
-        int codigoErro = 0;
-
-        // ! No caso de ser recebido um valor inválido por parâmetro deve-se retornar “-7”
-        if (qtdade <= 0) {
-            codigoErro = -7;
+        if (qtdade < 0) {
+            int[] fezBosta = { -7 };
+            return fezBosta;
         }
 
-        // ! se o pedido não puder ser atendido em função da “situação” retorna-se “-14”
-        if (this.situacao == SITUACAO.EMERGENCIA && tipoPosto == TIPOPOSTO.COMUM) {
-            codigoErro = -14;
-            multiplicadorNormal = 0.0;
-            multiplicadorEstrategico = 0.5;
-        }
+        int qtdAditivo = qtdade * 5 / 100;
+        int qtdGasolina = qtdade * 70 / 100;
+        int qtdAlcool = qtdade * 25 / 100;
 
-        if (this.situacao == SITUACAO.SOBRAVISO) {
-            multiplicadorNormal = 0.5;
-            multiplicadorEstrategico = 1.0;
+        boolean res = false;
+        if (this.situacao == SITUACAO.NORMAL) {
+            res = this.encomenda(qtdAditivo, qtdGasolina, qtdAlcool / 2, qtdAlcool / 2, 100);
+        } else if ((this.situacao == SITUACAO.SOBRAVISO) && (tipoPosto == TIPOPOSTO.COMUM)) {
+            this.encomenda(qtdAditivo, qtdGasolina, qtdAlcool / 2, qtdAlcool / 2, 50);
+        } else if ((this.situacao == SITUACAO.SOBRAVISO) && (tipoPosto == TIPOPOSTO.ESTRATEGICO)) {
+            this.encomenda(qtdAditivo, qtdGasolina, qtdAlcool / 2, qtdAlcool / 2, 100);
+        } else if ((this.situacao == SITUACAO.EMERGENCIA) && (tipoPosto == TIPOPOSTO.COMUM)) {
+            int[] fodeo = { -14 };
+            return fodeo;
+        } else if ((this.situacao == SITUACAO.EMERGENCIA) && (tipoPosto == TIPOPOSTO.ESTRATEGICO)) {
+            this.encomenda(qtdAditivo, qtdGasolina, qtdAlcool / 2, qtdAlcool / 2, 50);
         }
+        this.defineSituação();
 
-        double multiplicador = tipoPosto == TIPOPOSTO.COMUM ? multiplicadorNormal : multiplicadorEstrategico;
-        int quantidadeCalculada = (int) Math.floor(qtdade * multiplicador);
-        int bkpGasolina = this.gasolina;
-        int bkpAditivo = this.aditivo;
-        int bkpAlcool1 = this.alcool1;
-        int bkpAlcool2 = this.alcool2;
-        try {
-            this.retiraAditivo(quantidadeCalculada);
-            this.retiraAlcool(quantidadeCalculada);
-            this.retiraGasolina(quantidadeCalculada);
-        } catch (Exception e) {
-            codigoErro = -21;
-            this.gasolina = bkpGasolina;
-            this.aditivo = bkpAditivo;
-            this.alcool1 = bkpAlcool1;
-            this.alcool2 = bkpAlcool2;
+        if (res) {
+            return this.getQuantidadeTanques();
         }
+        int[] numDeu = { -21 };
+        return numDeu;
 
-        //! erro, aditivo, gasolina, álcool T1 e álcool T2
-        quantidades[0] = codigoErro;
-        quantidades[1] = this.aditivo;
-        quantidades[2] = this.gasolina;
-        quantidades[3] = this.alcool1;
-        quantidades[4] = this.alcool2;
-        defineSituacao();
-        return quantidades;
+    }
+
+    public SITUACAO getSituacao() {
+        return situacao;
+    }
+
+    public int getAditivo() {
+        return aditivo;
+    }
+
+    public int getGasolina() {
+        return gasolina;
+    }
+
+    public int getAlcool() {
+        return alcool;
+    }
+
+    public int getAlcool2() {
+        return alcool2;
+    }
+
+    public int recebeAditivo(int qtdade) {
+        if ((this.aditivo + qtdade) > MAX_ADITIVO) {
+            int sobra = MAX_ADITIVO - this.aditivo;
+            this.aditivo += sobra;
+            return sobra;
+        } else if (qtdade < 0) {
+            return -1;
+        } else {
+            this.aditivo += qtdade;
+            return qtdade;
+        }
+    }
+
+    public int recebeGasolina(int qtdade) {
+        if ((this.gasolina + qtdade) > MAX_GASOLINA) {
+            int sobra = MAX_GASOLINA - this.gasolina;
+            this.gasolina += sobra;
+            return sobra;
+        } else if (qtdade < 0) {
+            return -1;
+        } else {
+            this.gasolina += qtdade;
+            return qtdade;
+        }
+    }
+
+    public int recebeAlcool(int qtdade) {
+        if ((this.alcool + qtdade) > MAX_ALCOOL) {
+            int sobra = MAX_ALCOOL - this.alcool;
+            this.alcool += sobra;
+            this.alcool2 += sobra;
+            return sobra;
+        } else if (qtdade < 0) {
+            return -1;
+        } else {
+            this.alcool += qtdade;
+            this.alcool2 += qtdade;
+            return qtdade;
+        }
+    }
+
+    private boolean validaEntradas(int aditivo, int gasolina, int alcool, int alcool2) {
+        return (alcool != alcool2) ||
+                (gasolina > MAX_GASOLINA || gasolina <= 0) ||
+                (aditivo > MAX_ADITIVO || aditivo <= 0) ||
+                (alcool > MAX_ALCOOL || alcool <= 0);
     }
 }
